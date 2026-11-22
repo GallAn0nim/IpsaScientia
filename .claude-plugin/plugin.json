@@ -1,0 +1,10 @@
+{
+  "name": "ipsa-scientia",
+  "version": "0.1.0",
+  "description": "Ipsa scientia potestas est: one short fact above the prompt while your agent works.",
+  "author": {
+    "name": "GallAn0nim"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,15 @@
+# Changelog
+
+This project follows [semantic versioning](https://semver.org).
+
+## 0.1.0
+
+First release.
+
+- One fact above the prompt during a longer turn: after 30 s of a running turn, at most every 20 minutes across all sessions, at most 12 a day, one per turn.
+- Fact card with I knew it (`k`), I need to check it (`c`) and Copy (`y`), in the terminal and the desktop app. It hides 15 s after the turn ends.
+- Shuffle bag over the enabled categories: every fact once before any repeats; known facts never return.
+- Side panel: on/off with timed pauses, Today and All time stats, the To check list with sources, settings, and the fact base by category.
+- AI facts about the current project (off by default), with four AI context levels, a daily cap and a fallback to the fact base.
+- Your own facts in `~/.claude/ipsa-scientia/facts.json`, merged at session start.
+- Fact base in `data/facts.json` with a checker, `scripts/check-facts.mjs`.

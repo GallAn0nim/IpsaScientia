@@ -1,0 +1,62 @@
+{
+  "v": 1,
+  "categories": [
+    { "id": "computer-history", "name": "Computer history" },
+    { "id": "languages", "name": "Programming languages" },
+    { "id": "web", "name": "Internet and the web" },
+    { "id": "math", "name": "Math" },
+    { "id": "space", "name": "Space" },
+    { "id": "body", "name": "Human body" },
+    { "id": "nature", "name": "Nature" },
+    { "id": "words", "name": "Words and language" }
+  ],
+  "facts": [
+    { "id": "mark-ii-moth", "category": "computer-history", "text": "In 1947 Harvard Mark II operators taped a moth into their logbook: \"First actual case of bug being found.\" Engineers already said bug long before.", "source": "https://en.wikipedia.org/wiki/Software_bug", "addedIn": "0.1.0" },
+    { "id": "eniac-weight", "category": "computer-history", "text": "ENIAC, finished in 1945, weighed about 27 tonnes and took up some 167 square metres of floor.", "source": "https://en.wikipedia.org/wiki/ENIAC", "addedIn": "0.1.0" },
+    { "id": "first-email-at-sign", "category": "computer-history", "text": "Ray Tomlinson sent the first networked email in 1971 and picked the @ sign to separate the user from the host.", "source": "https://en.wikipedia.org/wiki/Ray_Tomlinson", "addedIn": "0.1.0" },
+    { "id": "apollo-guidance-memory", "category": "computer-history", "text": "The Apollo Guidance Computer had 2,048 words of erasable memory, about 4 KB, and 36,864 words of rope memory woven by hand.", "source": "https://en.wikipedia.org/wiki/Apollo_Guidance_Computer", "addedIn": "0.1.0" },
+    { "id": "ibm-350-disk", "category": "computer-history", "text": "IBM's first hard disk drive, the 350 of 1956, held about 3.75 MB on fifty 24-inch platters.", "source": "https://en.wikipedia.org/wiki/IBM_350", "addedIn": "0.1.0" },
+
+    { "id": "python-name", "category": "languages", "text": "Python is named after Monty Python's Flying Circus, not the snake: Guido van Rossum was reading its scripts at the time.", "source": "https://docs.python.org/3/faq/general.html#why-is-it-called-python", "addedIn": "0.1.0" },
+    { "id": "lisp-age", "category": "languages", "text": "Lisp dates from 1958, which makes it the second-oldest high-level language still in common use, after Fortran.", "source": "https://en.wikipedia.org/wiki/Lisp_(programming_language)", "addedIn": "0.1.0" },
+    { "id": "javascript-ten-days", "category": "languages", "text": "Brendan Eich wrote the first version of JavaScript in about ten days in May 1995, at Netscape.", "source": "https://en.wikipedia.org/wiki/Brendan_Eich", "addedIn": "0.1.0" },
+    { "id": "java-oak", "category": "languages", "text": "Java was first called Oak, after an oak tree outside James Gosling's office.", "source": "https://en.wikipedia.org/wiki/Java_(programming_language)", "addedIn": "0.1.0" },
+    { "id": "csharp-cool", "category": "languages", "text": "C# was first developed under the name Cool, short for \"C-like Object Oriented Language\".", "source": "https://en.wikipedia.org/wiki/C_Sharp_(programming_language)", "addedIn": "0.1.0" },
+
+    { "id": "first-website", "category": "web", "text": "The first website, at info.cern.ch, went public in 1991. Its subject was the World Wide Web itself.", "source": "https://home.cern/science/computing/birth-web/short-history-web", "addedIn": "0.1.0" },
+    { "id": "http-418", "category": "web", "text": "HTTP status 418, \"I'm a teapot\", comes from a 1998 April Fools' RFC about controlling coffee pots over the internet.", "source": "https://datatracker.ietf.org/doc/html/rfc2324", "addedIn": "0.1.0" },
+    { "id": "symbolics-com", "category": "web", "text": "symbolics.com, registered on 15 March 1985, was the first .com domain name.", "source": "https://en.wikipedia.org/wiki/Symbolics", "addedIn": "0.1.0" },
+    { "id": "trojan-room-coffee-pot", "category": "web", "text": "One of the first webcams watched a coffee pot in Cambridge's Trojan Room, so people could see if it was empty before walking over.", "source": "https://en.wikipedia.org/wiki/Trojan_Room_coffee_pot", "addedIn": "0.1.0" },
+    { "id": "first-browser-editor", "category": "web", "text": "Tim Berners-Lee's first browser, WorldWideWeb (1990), was also an editor: you could write pages, not just read them.", "source": "https://en.wikipedia.org/wiki/WorldWideWeb", "addedIn": "0.1.0" },
+
+    { "id": "birthday-paradox", "category": "math", "text": "In a room of just 23 people, the chance that two share a birthday is better than even.", "source": "https://en.wikipedia.org/wiki/Birthday_problem", "addedIn": "0.1.0" },
+    { "id": "euclid-primes", "category": "math", "text": "Euclid proved around 300 BC that there are infinitely many prime numbers, and his proof is still taught today.", "source": "https://en.wikipedia.org/wiki/Euclid%27s_theorem", "addedIn": "0.1.0" },
+    { "id": "googol-name", "category": "math", "text": "A googol is 10 to the power of 100. The name came from Milton Sirotta, the 9-year-old nephew of mathematician Edward Kasner.", "source": "https://en.wikipedia.org/wiki/Googol", "addedIn": "0.1.0" },
+    { "id": "deck-orders", "category": "math", "text": "A deck of 52 cards can be ordered in 52! ways, about 8 × 10^67, so a well-shuffled deck is almost surely in an order never seen before.", "source": "https://en.wikipedia.org/wiki/Factorial", "addedIn": "0.1.0" },
+    { "id": "four-colour-computer", "category": "math", "text": "The four colour theorem, proved in 1976, was the first major theorem proved with the help of a computer.", "source": "https://en.wikipedia.org/wiki/Four_color_theorem", "addedIn": "0.1.0" },
+
+    { "id": "venus-day", "category": "space", "text": "Venus turns so slowly that one rotation takes 243 Earth days, longer than its year of 225.", "source": "https://science.nasa.gov/venus/venus-facts/", "addedIn": "0.1.0" },
+    { "id": "sunlight-age", "category": "space", "text": "Sunlight left the Sun's surface about 8 minutes ago, but its energy spent at least 10,000 years working out from the core.", "source": "https://en.wikipedia.org/wiki/Sun", "addedIn": "0.1.0" },
+    { "id": "iss-sunrises", "category": "space", "text": "The International Space Station circles Earth about 16 times a day, so its crew sees about 16 sunrises and sunsets.", "source": "https://www.nasa.gov/international-space-station/space-station-facts-and-figures/", "addedIn": "0.1.0" },
+    { "id": "olympus-mons", "category": "space", "text": "Olympus Mons on Mars rises about 22 km, roughly two and a half times the height of Mount Everest.", "source": "https://en.wikipedia.org/wiki/Olympus_Mons", "addedIn": "0.1.0" },
+    { "id": "voyager-golden-record", "category": "space", "text": "Both Voyager probes carry a gold-plated record of sounds and images from Earth, in case anyone ever finds them.", "source": "https://science.nasa.gov/mission/voyager/golden-record/", "addedIn": "0.1.0" },
+
+    { "id": "bones-at-birth", "category": "body", "text": "A newborn has around 270 bones. Many fuse while growing up, leaving an adult with about 206.", "source": "https://en.wikipedia.org/wiki/Human_skeleton", "addedIn": "0.1.0" },
+    { "id": "stapes", "category": "body", "text": "The smallest bone in the body is the stapes in the middle ear, about 3 millimetres long.", "source": "https://en.wikipedia.org/wiki/Stapes", "addedIn": "0.1.0" },
+    { "id": "brain-energy", "category": "body", "text": "The brain is about 2% of body weight but uses about 20% of the body's energy.", "source": "https://en.wikipedia.org/wiki/Human_brain", "addedIn": "0.1.0" },
+    { "id": "more-than-five-senses", "category": "body", "text": "Humans have more than five senses: balance, the sense of where your limbs are, and temperature are senses too.", "source": "https://en.wikipedia.org/wiki/Sense", "addedIn": "0.1.0" },
+    { "id": "twin-fingerprints", "category": "body", "text": "Identical twins share almost all of their DNA, but not their fingerprints.", "source": "https://en.wikipedia.org/wiki/Fingerprint", "addedIn": "0.1.0" },
+
+    { "id": "octopus-hearts", "category": "nature", "text": "An octopus has three hearts and blue blood, which carries oxygen with copper-based hemocyanin.", "source": "https://en.wikipedia.org/wiki/Octopus", "addedIn": "0.1.0" },
+    { "id": "ancient-honey", "category": "nature", "text": "Honey found in ancient Egyptian tombs, thousands of years old, was reported to be still edible.", "source": "https://www.smithsonianmag.com/science-nature/the-science-behind-honeys-eternal-shelf-life-1218690/", "addedIn": "0.1.0" },
+    { "id": "honey-fungus-oregon", "category": "nature", "text": "One of the largest living things is a honey fungus in Oregon, spreading underground across about 9 square kilometres.", "source": "https://en.wikipedia.org/wiki/Armillaria_ostoyae", "addedIn": "0.1.0" },
+    { "id": "pando", "category": "nature", "text": "Pando, a grove of quaking aspen in Utah, is a single organism: some 47,000 stems on one root system.", "source": "https://en.wikipedia.org/wiki/Pando_(tree)", "addedIn": "0.1.0" },
+    { "id": "wombat-cubes", "category": "nature", "text": "Wombats produce cube-shaped droppings, and nobody had worked out how until a study in 2018.", "source": "https://en.wikipedia.org/wiki/Wombat", "addedIn": "0.1.0" },
+
+    { "id": "spam-sketch", "category": "words", "text": "Junk email is called spam after a 1970 Monty Python sketch in which Vikings in a café drown out all talk by singing \"Spam\".", "source": "https://en.wikipedia.org/wiki/Spamming", "addedIn": "0.1.0" },
+    { "id": "magic-cookie", "category": "words", "text": "The web cookie is named after the magic cookie, an older term for a token a program receives and passes back unchanged.", "source": "https://en.wikipedia.org/wiki/HTTP_cookie", "addedIn": "0.1.0" },
+    { "id": "robot-word", "category": "words", "text": "The word robot comes from Karel Čapek's 1920 play R.U.R.; his brother Josef suggested it, from the Czech robota, forced labour.", "source": "https://en.wikipedia.org/wiki/R.U.R.", "addedIn": "0.1.0" },
+    { "id": "bit-word", "category": "words", "text": "\"Bit\", short for binary digit, first appeared in print in Claude Shannon's 1948 paper, which credited John Tukey with the word.", "source": "https://en.wikipedia.org/wiki/Bit", "addedIn": "0.1.0" },
+    { "id": "pixel-word", "category": "words", "text": "Pixel blends \"picture element\". The word first appeared in print in 1965.", "source": "https://en.wikipedia.org/wiki/Pixel", "addedIn": "0.1.0" }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "ipsa-scientia",
+  "description": "One short fact above the prompt while your agent works: a Claude Code mod for the terminal and the desktop app.",
+  "owner": {
+    "name": "GallAn0nim"
+  },
+  "plugins": [
+    {
+      "name": "ipsa-scientia",
+      "source": "./",
+      "description": "Ipsa scientia potestas est: one short fact above the prompt while your agent works."
+    }
+  ]
+}
