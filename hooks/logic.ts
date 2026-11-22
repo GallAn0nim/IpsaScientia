@@ -245,7 +245,7 @@ export function nextText(settings: Settings, pause: Pause | null, day: Day | nul
   return `Next fact in ${Math.ceil(msUntilNext(settings, pause, day, now)! / MINUTE)} min`
 }
 
-/** The status line: "Ipsa Scientia · next fact in 12 min · 3 to check". */
+/** The status line: "Ipsa Scientia · next fact in 12 min · 3 didn't know". */
 export function statusText(
   settings: Settings,
   pause: Pause | null,
@@ -255,7 +255,7 @@ export function statusText(
 ): string {
   const next = nextText(settings, pause, day, now)
   const head = next.charAt(0).toLowerCase() + next.slice(1)
-  return `Ipsa Scientia · ${head}${toCheckCount > 0 ? ` · ${toCheckCount} to check` : ''}`
+  return `Ipsa Scientia · ${head}${toCheckCount > 0 ? ` · ${toCheckCount} didn't know` : ''}`
 }
 
 /** When a card shown in a turn hides: 15 s after the turn ends. */
@@ -281,7 +281,7 @@ export const normalizeBag = (raw: unknown): Bag => {
   return { v: 1, ids: r && r.v === 1 ? strings(r.ids) : [] }
 }
 
-/** Facts that may still come up: in an enabled category, never marked I knew it, not on (or checked off) the To check list. */
+/** Facts that may still come up: in an enabled category, never marked I knew it, not on (or looked up from) the Didn't know list. */
 export function eligibleFacts(facts: readonly Fact[], settings: Settings, seen: Seen): Fact[] {
   return facts.filter(f => {
     if (settings.disabledCategories.includes(f.category)) return false
@@ -332,7 +332,7 @@ export function pickFact(
 
 /**
  * What a fact's outcome becomes. Ignored never overwrites a stronger one, so
- * a fact on the To check list that comes back as ignored stays on it.
+ * a fact on the Didn't know list that comes back as ignored stays on it.
  */
 export function setOutcome(seen: Seen, id: string, outcome: Outcome): Seen {
   const before = seen.byId[id]
@@ -340,7 +340,7 @@ export function setOutcome(seen: Seen, id: string, outcome: Outcome): Seen {
   return { v: 1, byId: { ...seen.byId, [id]: outcome } }
 }
 
-// ---- The To check list ----
+// ---- The Didn't know list (stored as toCheck) ----
 
 export function normalizeToCheck(raw: unknown): ToCheck {
   const r = raw as Partial<ToCheck> | null | undefined
@@ -357,7 +357,7 @@ export function addToCheck(list: ToCheck, item: ToCheckItem): ToCheck {
   return { v: 1, items: [item, ...list.items.filter(x => x.id !== item.id)] }
 }
 
-/** Checked: the item leaves the list. */
+/** Looked it up: the item leaves the list. */
 export function removeToCheck(list: ToCheck, id: string): { list: ToCheck; item: ToCheckItem | null } {
   const item = list.items.find(x => x.id === id) ?? null
   return { list: { v: 1, items: list.items.filter(x => x.id !== id) }, item }

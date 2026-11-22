@@ -15,7 +15,7 @@ Bacon said knowledge is power. He never said it had to come from your phone.
 ```
 Did you know? · Computer history
 In 1947 Harvard Mark II operators taped a moth into their logbook: "First actual case of bug being found." Engineers already said bug long before.
-[ I knew it ]  [ I need to check it ]  [ Copy ]
+[ I knew it ]  [ I didn't know ]  [ Copy ]
 ```
 
 You read it in ten seconds and go back to work. You don't leave the session, and it costs Claude nothing: the facts ship with the mod, so it sends nothing to a model and adds nothing to the agent's context.
@@ -25,7 +25,7 @@ It is rare on purpose. A fact you see every turn turns into wallpaper; a fact th
 ## What it does
 
 - **One fact during a longer turn.** Only when Claude's turn has run for 30 seconds, at most every 20 minutes (counted across all your open sessions), and at most 12 a day. Short back-and-forth questions never see one. An 8-hour day brings about 10 to 12 facts.
-- **Three buttons.** **I knew it** (`k`): the fact never comes back. **I need to check it** (`c`): it goes on your To check list with its source link. **Copy** (`y`): the fact and its source go to the clipboard, for the colleague who needs to know. Press nothing and the card hides itself 15 seconds after the turn ends.
+- **Three buttons.** **I knew it** (`k`): the fact never comes back. **I didn't know** (`d`): it goes on your Didn't know list in the panel, with its source link, so you can look it up later. **Copy** (`y`): the fact and its source go to the clipboard, for the colleague who needs to know. Press nothing and the card hides itself 15 seconds after the turn ends.
 - **Eight categories:** computer history, programming languages, the internet and the web, math, space, the human body, nature, and words and language (where *bug*, *cookie* and *spam* come from).
 - **Every built-in fact has a source**, and every one is checked against it by hand before it ships. No source, no fact. Popular myths appear only to be corrected.
 - **AI facts about your project** (off by default). Let Claude write one fact in three about what you are working on: the borrow checker while you edit Rust, the history of regular expressions while you fix one. You choose how much the model sees.
@@ -53,7 +53,7 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 
 1. **A turn starts.** Ipsa Scientia checks whether a fact is due: the mod is on, the last fact (in any session) was at least *Minutes between facts* ago, and today's limit is not used up.
 2. **The turn runs on.** If it is still running after *Show after* (30 s), one fact appears above the prompt, in the session whose turn it is. Never more than one per turn.
-3. **Picking.** A shuffle bag over the categories you have on: every fact comes up once before any repeats. Facts you knew never return; facts on your To check list stay away while they are there. Once you have seen them all, only the ones you let pass come back.
+3. **Picking.** A shuffle bag over the categories you have on: every fact comes up once before any repeats. Facts you knew never return; facts on your Didn't know list stay away while they are there. Once you have seen them all, only the ones you let pass come back.
 4. **The turn ends.** The card stays 15 more seconds, then hides and counts as *Ignored*. Any button but Copy closes it at once.
 
 ### The panel
@@ -61,7 +61,7 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 Type `/ipsa-scientia` to open the side panel (docked in the terminal's fullscreen layout, inline on its main screen). Top to bottom:
 
 - **What it does**, with **Turn off** (for 1 h, 2 h or until tomorrow; it turns itself back on) and when the next fact can come.
-- **Stats**: Today and All time side by side (Shown, Knew, To check, Ignored, Copied, Checked) and how many you knew. Below them, your **To check** list, newest first, each with its source link, **Checked** and **Copy**.
+- **Stats**: Today and All time side by side (Shown, Knew, Didn't know, Ignored, Copied, Looked up) and how many you knew. Below them, your **Didn't know** list, newest first, each with its source link, **Looked it up** and **Copy**. Press **Looked it up** once you have read the source: the fact leaves the list, counts as *Looked up*, and never comes back.
 - **Settings**, kept across sessions:
 
 | Setting | Default | Range |
@@ -75,7 +75,7 @@ Type `/ipsa-scientia` to open the side panel (docked in the terminal's fullscree
 
 - **Fact base**: every category with a checkbox and how much of it you have seen (`Space · 12 of 40 seen`).
 
-The status line shows `Ipsa Scientia · next fact in 12 min · 3 to check`.
+The status line shows `Ipsa Scientia · next fact in 12 min · 3 didn't know`.
 
 ### AI facts
 
@@ -136,7 +136,7 @@ tsc -p .
 
 `tsc -p .` needs the engine's types in `.claude-plugin/types/`, which Claude Code writes the first time it loads the mod from this folder (`claude --plugin-dir .`).
 
-- `hooks/logic.ts`: every rule as a pure function (when a fact shows, the shuffle bag, counters, the To check list, merging your facts file). No engine calls, so all of it is unit-tested.
+- `hooks/logic.ts`: every rule as a pure function (when a fact shows, the shuffle bag, counters, the Didn't know list, merging your facts file). No engine calls, so all of it is unit-tested.
 - `hooks/ai.ts`: what each AI context level sends, the request, and reading the reply. Also pure and tested.
 - `hooks/register.tsx`: wires events to the logic and draws the card and the panel.
 - `types/index.d.ts`: shared types and the `$.state` contract.
