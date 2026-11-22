@@ -15,8 +15,8 @@ import type {
   Pause,
   Seen,
   Settings,
-  ToCheck,
-  ToCheckItem,
+  DidntKnow,
+  DidntKnowItem,
   Totals,
 } from '../types'
 
@@ -72,7 +72,7 @@ export const patchSettings = (settings: Settings, patch: Partial<Settings>): Set
 
 // ---- Counters ----
 
-export const EMPTY_COUNTS: Counts = { shown: 0, knew: 0, toCheck: 0, ignored: 0, copied: 0, checked: 0 }
+export const EMPTY_COUNTS: Counts = { shown: 0, knew: 0, didntKnow: 0, ignored: 0, copied: 0, lookedUp: 0 }
 
 export function normalizeCounts(raw: unknown): Counts {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Partial<Record<keyof Counts, unknown>>
@@ -80,10 +80,10 @@ export function normalizeCounts(raw: unknown): Counts {
   return {
     shown: n(r.shown),
     knew: n(r.knew),
-    toCheck: n(r.toCheck),
+    didntKnow: n(r.didntKnow),
     ignored: n(r.ignored),
     copied: n(r.copied),
-    checked: n(r.checked),
+    lookedUp: n(r.lookedUp),
   }
 }
 
@@ -250,12 +250,12 @@ export function statusText(
   settings: Settings,
   pause: Pause | null,
   day: Day | null,
-  toCheckCount: number,
+  didntKnowCount: number,
   now: number,
 ): string {
   const next = nextText(settings, pause, day, now)
   const head = next.charAt(0).toLowerCase() + next.slice(1)
-  return `Ipsa Scientia · ${head}${toCheckCount > 0 ? ` · ${toCheckCount} didn't know` : ''}`
+  return `Ipsa Scientia · ${head}${didntKnowCount > 0 ? ` · ${didntKnowCount} didn't know` : ''}`
 }
 
 /** When a card shown in a turn hides: 15 s after the turn ends. */
@@ -270,7 +270,7 @@ export function normalizeSeen(raw: unknown): Seen {
   const byId: Record<string, Outcome> = {}
   if (r && r.v === 1 && r.byId && typeof r.byId === 'object') {
     for (const [k, v] of Object.entries(r.byId)) {
-      if (v === 'knew' || v === 'ignored' || v === 'check' || v === 'checked') byId[k] = v
+      if (v === 'knew' || v === 'ignored' || v === 'didntKnow' || v === 'lookedUp') byId[k] = v
     }
   }
   return { v: 1, byId }
@@ -340,25 +340,25 @@ export function setOutcome(seen: Seen, id: string, outcome: Outcome): Seen {
   return { v: 1, byId: { ...seen.byId, [id]: outcome } }
 }
 
-// ---- The Didn't know list (stored as toCheck) ----
+// ---- The Didn't know list (stored as didntKnow) ----
 
-export function normalizeToCheck(raw: unknown): ToCheck {
-  const r = raw as Partial<ToCheck> | null | undefined
+export function normalizeDidntKnow(raw: unknown): DidntKnow {
+  const r = raw as Partial<DidntKnow> | null | undefined
   if (!r || r.v !== 1 || !Array.isArray(r.items)) return { v: 1, items: [] }
   const items = r.items.filter(
-    (x): x is ToCheckItem =>
+    (x): x is DidntKnowItem =>
       !!x && typeof x.id === 'string' && typeof x.text === 'string' && typeof x.category === 'string',
   )
   return { v: 1, items }
 }
 
 /** Newest first; a fact already on the list moves to the top. */
-export function addToCheck(list: ToCheck, item: ToCheckItem): ToCheck {
+export function addDidntKnow(list: DidntKnow, item: DidntKnowItem): DidntKnow {
   return { v: 1, items: [item, ...list.items.filter(x => x.id !== item.id)] }
 }
 
 /** Looked it up: the item leaves the list. */
-export function removeToCheck(list: ToCheck, id: string): { list: ToCheck; item: ToCheckItem | null } {
+export function removeDidntKnow(list: DidntKnow, id: string): { list: DidntKnow; item: DidntKnowItem | null } {
   const item = list.items.find(x => x.id === id) ?? null
   return { list: { v: 1, items: list.items.filter(x => x.id !== id) }, item }
 }

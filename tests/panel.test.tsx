@@ -9,11 +9,11 @@ type Ui = { find: (q: { type: string; text?: RegExp; key?: string }) => Promise<
 const text = async (ui: Ui, re: RegExp) => (await ui.find({ type: 'Text', text: re }))?.text
 const button = async (ui: Ui, key: string) => (await ui.find({ type: 'Button', key }))?.props.label
 
-const counts = (o: Partial<Record<string, number>>) => ({ shown: 0, knew: 0, toCheck: 0, ignored: 0, copied: 0, checked: 0, ...o })
+const counts = (o: Partial<Record<string, number>>) => ({ shown: 0, knew: 0, didntKnow: 0, ignored: 0, copied: 0, lookedUp: 0, ...o })
 const day = (extra: object = {}) => ({
   v: 1,
   date: '2026-03-10',
-  counts: counts({ shown: 10, knew: 4, toCheck: 3, ignored: 3, copied: 2 }),
+  counts: counts({ shown: 10, knew: 4, didntKnow: 3, ignored: 3, copied: 2 }),
   lastFactAt: T0 - 8 * MIN,
   aiCalls: 0,
   aiCostUsd: 0,
@@ -47,7 +47,7 @@ for (const surface of SURFACES) {
     world(on, T0, {
       store: {
         'is.day': day(),
-        'is.totals': { v: 1, counts: counts({ shown: 40, knew: 20, toCheck: 5, ignored: 12, copied: 4, checked: 2 }) },
+        'is.totals': { v: 1, counts: counts({ shown: 40, knew: 20, didntKnow: 5, ignored: 12, copied: 4, lookedUp: 2 }) },
       },
     })
     await $.session.start({ cwd: '/', surface, isInteractive: true })
@@ -71,7 +71,7 @@ for (const surface of SURFACES) {
     const { store } = world(on, T0, {
       store: {
         'is.day': day(),
-        'is.toCheck': { v: 1, items: [item('venus-day'), item('ai-1', { isAi: true, source: undefined, text: 'An AI fact.' })] },
+        'is.didntKnow': { v: 1, items: [item('venus-day'), item('ai-1', { isAi: true, source: undefined, text: 'An AI fact.' })] },
       },
     })
     await $.session.start({ cwd: '/', surface, isInteractive: true })
@@ -86,8 +86,8 @@ for (const surface of SURFACES) {
     await ui.press({ key: 'looked-up-venus-day' })
     expect(await text(ui, /^Fact venus-day\.$/)).toBe(undefined)
     expect(await ui.find({ type: 'Link' })).toBe(undefined)
-    expect((store.get('is.day') as { counts: { checked: number } }).counts.checked).toBe(1)
-    expect((store.get('is.seen') as { byId: Record<string, string> }).byId['venus-day']).toBe('checked')
+    expect((store.get('is.day') as { counts: { lookedUp: number } }).counts.lookedUp).toBe(1)
+    expect((store.get('is.seen') as { byId: Record<string, string> }).byId['venus-day']).toBe('lookedUp')
     await ui.unmount()
   })
 

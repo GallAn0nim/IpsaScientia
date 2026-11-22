@@ -1,14 +1,14 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderChildren, RenderSurface, Timer } from 'claude-code'
 
-import type { AiContext, AiFact, Card, Day, FactFile, Pause, Seen, Settings, ToCheck, ToCheckItem, Totals } from '../types'
+import type { AiContext, AiFact, Card, Day, FactFile, Pause, Seen, Settings, DidntKnow, DidntKnowItem, Totals } from '../types'
 import type { Changed, Deps } from './ai'
 import { MANIFESTS, buildProjectData, buildRequest, parseManifest, parseNumstat, parseReply, safeChanged } from './ai'
 import type { Merged, PauseLength } from './logic'
 import {
   DEFAULT_SETTINGS,
   HIDE_AFTER_MS,
-  addToCheck,
+  addDidntKnow,
   bump,
   categoryStats,
   copyText,
@@ -30,13 +30,13 @@ import {
   normalizePause,
   normalizeSeen,
   normalizeSettings,
-  normalizeToCheck,
+  normalizeDidntKnow,
   normalizeTotals,
   patchSettings,
   pauseUntil,
   pickFact,
   recordShown,
-  removeToCheck,
+  removeDidntKnow,
   rollDay,
   setOutcome,
   shouldShow,
@@ -53,7 +53,7 @@ const K = {
   totals: 'is.totals',
   seen: 'is.seen',
   bag: 'is.bag',
-  toCheck: 'is.toCheck',
+  didntKnow: 'is.didntKnow',
 } as const
 
 // ---- Session values, read while drawing ----
@@ -61,7 +61,7 @@ const settingsAtom = atom({ plugin: 'ipsa-scientia', key: 'settings' } as const,
 const dayAtom = atom({ plugin: 'ipsa-scientia', key: 'day' } as const, null)
 const totalsAtom = atom({ plugin: 'ipsa-scientia', key: 'totals' } as const, null)
 const pauseAtom = atom({ plugin: 'ipsa-scientia', key: 'pause' } as const, null)
-const toCheckAtom = atom({ plugin: 'ipsa-scientia', key: 'toCheck' } as const, null)
+const didntKnowAtom = atom({ plugin: 'ipsa-scientia', key: 'didntKnow' } as const, null)
 const categoriesAtom = atom({ plugin: 'ipsa-scientia', key: 'categories' } as const, [])
 const cardAtom = atom({ plugin: 'ipsa-scientia', key: 'card' } as const, null)
 const turnAtom = atom({ plugin: 'ipsa-scientia', key: 'turnStartedAt' } as const, null)
@@ -81,7 +81,7 @@ type Snapshot = {
   day: Day | null
   totals: Totals
   seen: Seen
-  toCheck: ToCheck
+  didntKnow: DidntKnow
   now: number
 }
 
@@ -122,13 +122,13 @@ async function loadFacts($: EngineInterface): Promise<Merged> {
 }
 
 async function readStore($: EngineInterface): Promise<Snapshot> {
-  const [settings, pause, day, totals, seen, toCheck, now] = await Promise.all([
+  const [settings, pause, day, totals, seen, didntKnow, now] = await Promise.all([
     $.store.get(K.settings),
     $.store.get(K.pause),
     $.store.get(K.day),
     $.store.get(K.totals),
     $.store.get(K.seen),
-    $.store.get(K.toCheck),
+    $.store.get(K.didntKnow),
     $.clock.now(),
   ])
   return {
@@ -137,7 +137,7 @@ async function readStore($: EngineInterface): Promise<Snapshot> {
     day: normalizeDay(day),
     totals: normalizeTotals(totals),
     seen: normalizeSeen(seen),
-    toCheck: normalizeToCheck(toCheck),
+    didntKnow: normalizeDidntKnow(didntKnow),
     now,
   }
 }
@@ -149,11 +149,11 @@ async function mirror($: EngineInterface, snap: Snapshot): Promise<void> {
     update($, pauseAtom, () => snap.pause),
     update($, dayAtom, () => (snap.day ? rollDay(snap.day, snap.now) : null)),
     update($, totalsAtom, () => snap.totals),
-    update($, toCheckAtom, () => snap.toCheck),
+    update($, didntKnowAtom, () => snap.didntKnow),
     update($, categoriesAtom, () => categoryStats(m.facts, m.categories, snap.seen)),
     update($, nowAtom, () => snap.now),
   ])
-  $.ui.status(statusText(snap.settings, snap.pause, snap.day, snap.toCheck.items.length, snap.now))
+  $.ui.status(statusText(snap.settings, snap.pause, snap.day, snap.didntKnow.items.length, snap.now))
 }
 
 /** Pull the shared values into this session, turn back on after a pause, hide an expired card. */
@@ -239,7 +239,7 @@ async function expireCard($: EngineInterface, key: string): Promise<void> {
 }
 
 /** I knew it, or I didn't know: the card closes. */
-async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'check'): Promise<void> {
+async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'didntKnow'): Promise<void> {
   const card = await read($, cardAtom)
   if (!card || card.key !== key) return
   await update($, cardAtom, () => null)
@@ -247,10 +247,10 @@ async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'che
   hideTimer = null
   const now = await $.clock.now()
   const c = await counters($, now)
-  await saveCounters($, bump(c.day, c.totals, outcome === 'knew' ? 'knew' : 'toCheck'))
+  await saveCounters($, bump(c.day, c.totals, outcome === 'knew' ? 'knew' : 'didntKnow'))
   if (card.factId) await $.store.set(K.seen, setOutcome(normalizeSeen(await $.store.get(K.seen)), card.factId, outcome))
-  if (outcome === 'check') {
-    const item: ToCheckItem = {
+  if (outcome === 'didntKnow') {
+    const item: DidntKnowItem = {
       id: card.factId ?? `ai-${card.shownAt}`,
       text: card.text,
       category: card.category,
@@ -258,7 +258,7 @@ async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'che
       date: localDate(now),
       isAi: card.isAi,
     }
-    await $.store.set(K.toCheck, addToCheck(normalizeToCheck(await $.store.get(K.toCheck)), item))
+    await $.store.set(K.didntKnow, addDidntKnow(normalizeDidntKnow(await $.store.get(K.didntKnow)), item))
     $.ui.toast("Added to Didn't know in the Ipsa Scientia panel.")
   }
   await sync($)
@@ -391,17 +391,17 @@ async function onTurnOff($: EngineInterface, length: PauseLength): Promise<void>
   await sync($)
 }
 
-async function onChecked($: EngineInterface, id: string): Promise<void> {
-  const { list, item } = removeToCheck(normalizeToCheck(await $.store.get(K.toCheck)), id)
+async function onLookedUp($: EngineInterface, id: string): Promise<void> {
+  const { list, item } = removeDidntKnow(normalizeDidntKnow(await $.store.get(K.didntKnow)), id)
   if (!item) return
-  await $.store.set(K.toCheck, list)
+  await $.store.set(K.didntKnow, list)
   const c = await counters($, await $.clock.now())
-  await saveCounters($, bump(c.day, c.totals, 'checked'))
-  if (!item.isAi) await $.store.set(K.seen, setOutcome(normalizeSeen(await $.store.get(K.seen)), id, 'checked'))
+  await saveCounters($, bump(c.day, c.totals, 'lookedUp'))
+  if (!item.isAi) await $.store.set(K.seen, setOutcome(normalizeSeen(await $.store.get(K.seen)), id, 'lookedUp'))
   await sync($)
 }
 
-async function onCopyItem($: EngineInterface, item: ToCheckItem, surface: RenderSurface | undefined): Promise<void> {
+async function onCopyItem($: EngineInterface, item: DidntKnowItem, surface: RenderSurface | undefined): Promise<void> {
   if (await copy($, item, surface)) {
     const c = await counters($, await $.clock.now())
     await saveCounters($, bump(c.day, c.totals, 'copied'))
@@ -505,7 +505,7 @@ export const register: Register = on => {
   on('command.run', { command: 'ipsa-scientia' }, async ($, e) => {
     const dev = e.args.trim() === '' ? null : await devCommand($, e.args)
     const snap = await sync($)
-    const status = statusText(snap.settings, snap.pause, snap.day, snap.toCheck.items.length, snap.now)
+    const status = statusText(snap.settings, snap.pause, snap.day, snap.didntKnow.items.length, snap.now)
     if (dev !== null) return { text: `${dev}\n${status}` }
     const opened = await $.ui.open({ id: PANE, title: 'Ipsa Scientia' })
     return { text: opened.isPlaced ? 'Ipsa Scientia panel opened.' : status }
@@ -526,7 +526,7 @@ export const register: Register = on => {
         <Text>{card.text}</Text>
         <Box flexDirection="row" gap={1} flexWrap="wrap" alignItems="center">
           <Button key="knew" label="I knew it" hotkey="k" onPress={() => closeCard($, card.key, 'knew')} />
-          <Button key="didnt-know" label="I didn't know" hotkey="d" onPress={() => closeCard($, card.key, 'check')} />
+          <Button key="didnt-know" label="I didn't know" hotkey="d" onPress={() => closeCard($, card.key, 'didntKnow')} />
           <Button key="copy" label="Copy" hotkey="y" onPress={p => onCopyCard($, card.key, p.surface)} />
           {card.isAi ? <Text dimColor>may be wrong</Text> : null}
         </Box>
@@ -537,19 +537,19 @@ export const register: Register = on => {
   // ---- The side panel ----
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const [settings, day, totals, pause, toCheck, categories, now, isAskingPause, pendingAi] = await Promise.all([
+    const [settings, day, totals, pause, didntKnow, categories, now, isAskingPause, pendingAi] = await Promise.all([
       read($, settingsAtom),
       read($, dayAtom),
       read($, totalsAtom),
       read($, pauseAtom),
-      read($, toCheckAtom),
+      read($, didntKnowAtom),
       read($, categoriesAtom),
       read($, nowAtom),
       read($, askPauseAtom),
       read($, pendingAiAtom),
     ])
     const { Box, Text, Button, Link, Select } = $.ui.resolve(e)
-    const items = toCheck?.items ?? []
+    const items = didntKnow?.items ?? []
     const next = nextText(settings, pause, day, now)
 
     if (e.props.placement === 'widget') {
@@ -563,7 +563,7 @@ export const register: Register = on => {
 
     const isOn = !isPaused(settings, pause, now)
     const today = day && day.date === localDate(now) ? day : null
-    const todayCounts = today?.counts ?? { shown: 0, knew: 0, toCheck: 0, ignored: 0, copied: 0, checked: 0 }
+    const todayCounts = today?.counts ?? { shown: 0, knew: 0, didntKnow: 0, ignored: 0, copied: 0, lookedUp: 0 }
     const allCounts = totals?.counts ?? todayCounts
 
     const section = (key: string, children: RenderChildren[]) => (
@@ -614,10 +614,10 @@ export const register: Register = on => {
     const STATS: [keyof typeof todayCounts, string][] = [
       ['shown', 'Shown'],
       ['knew', 'Knew'],
-      ['toCheck', "Didn't know"],
+      ['didntKnow', "Didn't know"],
       ['ignored', 'Ignored'],
       ['copied', 'Copied'],
-      ['checked', 'Looked up'],
+      ['lookedUp', 'Looked up'],
     ]
     const column = (key: string, title: string, counts: typeof todayCounts) => (
       <Box key={key} flexDirection="column" flexGrow={1} flexShrink={1}>
@@ -631,9 +631,9 @@ export const register: Register = on => {
       </Box>
     )
 
-    const toCheckRows =
+    const didntKnowRows =
       items.length === 0
-        ? [<Text key="none-to-check" dimColor>Nothing here. Every fact so far you either knew or let pass.</Text>]
+        ? [<Text key="none-didnt-know" dimColor>Nothing here. Every fact so far you either knew or let pass.</Text>]
         : items.map(item => (
             <Box key={`item-${item.id}`} flexDirection="column" gap={0}>
               <Text>{item.text}</Text>
@@ -642,7 +642,7 @@ export const register: Register = on => {
               </Text>
               <Box flexDirection="row" gap={1} flexWrap="wrap" alignItems="center">
                 {item.source ? <Link key={`source-${item.id}`} href={item.source} label="Source" /> : null}
-                <Button key={`looked-up-${item.id}`} label="Looked it up" variant="secondary" onPress={() => onChecked($, item.id)} />
+                <Button key={`looked-up-${item.id}`} label="Looked it up" variant="secondary" onPress={() => onLookedUp($, item.id)} />
                 <Button key={`copy-${item.id}`} label="Copy" variant="secondary" onPress={p => onCopyItem($, item, p.surface)} />
               </Box>
             </Box>
@@ -709,7 +709,7 @@ export const register: Register = on => {
           </Box>,
           <Text key="knew-line">{knewLine(todayCounts)}</Text>,
           label("Didn't know"),
-          ...toCheckRows,
+          ...didntKnowRows,
         ])}
 
         {section('settings', [

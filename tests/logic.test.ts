@@ -3,7 +3,7 @@ import { describe, expect, test } from 'claude-code/testing'
 import type { Day, Fact, FactFile, Seen } from '../types'
 import {
   DEFAULT_SETTINGS,
-  addToCheck,
+  addDidntKnow,
   bump,
   categoryStats,
   copyText,
@@ -18,7 +18,7 @@ import {
   normalizeTotals,
   pickFact,
   recordShown,
-  removeToCheck,
+  removeDidntKnow,
   rollDay,
   setOutcome,
   shouldShow,
@@ -113,10 +113,10 @@ describe('the shuffle bag', () => {
   })
 
   test("I knew it never comes back; Didn't know does not while it is on the list", async () => {
-    const seen: Seen = { v: 1, byId: { a: 'knew', b: 'check', c: 'checked', d: 'ignored' } }
+    const seen: Seen = { v: 1, byId: { a: 'knew', b: 'didntKnow', c: 'lookedUp', d: 'ignored' } }
     const rng = seeded(3)
     for (let i = 0; i < 10; i++) expect(pickFact(facts, S, seen, { v: 1, ids: [] }, rng)!.fact.id).toBe('d')
-    const all: Seen = { v: 1, byId: { a: 'knew', b: 'check', c: 'checked', d: 'knew' } }
+    const all: Seen = { v: 1, byId: { a: 'knew', b: 'didntKnow', c: 'lookedUp', d: 'knew' } }
     expect(pickFact(facts, S, all, { v: 1, ids: [] }, rng)).toBe(null)
   })
 
@@ -135,9 +135,9 @@ describe('the shuffle bag', () => {
     expect(toggleCategory(s, 'space', ['space', 'math'])!.disabledCategories).toEqual([])
   })
 
-  test('an ignored showing never weakens knew or check', async () => {
-    const seen: Seen = { v: 1, byId: { a: 'check' } }
-    expect(setOutcome(seen, 'a', 'ignored').byId.a).toBe('check')
+  test("an ignored showing never weakens knew or didn't know", async () => {
+    const seen: Seen = { v: 1, byId: { a: 'didntKnow' } }
+    expect(setOutcome(seen, 'a', 'ignored').byId.a).toBe('didntKnow')
     expect(setOutcome(seen, 'b', 'ignored').byId.b).toBe('ignored')
   })
 })
@@ -166,11 +166,11 @@ describe("the Didn't know list", () => {
   const item = (id: string, date = localDate(T0)) => ({ id, text: `fact ${id}`, category: 'space', date, isAi: false })
 
   test('newest first, no duplicates; Looked it up removes the item', async () => {
-    let list = addToCheck({ v: 1, items: [] }, item('a'))
-    list = addToCheck(list, item('b'))
-    list = addToCheck(list, item('a'))
+    let list = addDidntKnow({ v: 1, items: [] }, item('a'))
+    list = addDidntKnow(list, item('b'))
+    list = addDidntKnow(list, item('a'))
     expect(list.items.map(x => x.id)).toEqual(['a', 'b'])
-    const r = removeToCheck(list, 'a')
+    const r = removeDidntKnow(list, 'a')
     expect(r.item?.id).toBe('a')
     expect(r.list.items.map(x => x.id)).toEqual(['b'])
   })
