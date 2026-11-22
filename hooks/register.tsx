@@ -159,7 +159,6 @@ async function mirror($: EngineInterface, snap: Snapshot): Promise<void> {
   $.ui.status(statusText(snap.settings, snap.pause, snap.day, snap.didntKnow.items.length, snap.now))
 }
 
-/** Pull the shared values into this session, turn back on after a pause, hide an expired card. */
 /** Move the 0.1.0 Didn't know list to its new key, once, and delete the old one. */
 async function moveOldDidntKnow($: EngineInterface): Promise<void> {
   const old = await $.store.get(OLD_DIDNT_KNOW)
@@ -168,6 +167,7 @@ async function moveOldDidntKnow($: EngineInterface): Promise<void> {
   await $.store.delete(OLD_DIDNT_KNOW)
 }
 
+/** Pull the shared values into this session, turn back on after a pause, hide an expired card. */
 async function sync($: EngineInterface): Promise<Snapshot> {
   let snap = await readStore($)
   if (isPauseOver(snap.pause, snap.now)) {
