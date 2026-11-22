@@ -2,6 +2,12 @@
 
 This project follows [semantic versioning](https://semver.org).
 
+## Unreleased
+
+- "I need to check it" is now **I didn't know** (hotkey `d`), and the To check list and counter are now **Didn't know**.
+- "Checked" is now **Looked it up** on the list and **Looked up** in the stats.
+- Stored counts and lists carry over unchanged.
+
 ## 0.1.0
 
 First release.

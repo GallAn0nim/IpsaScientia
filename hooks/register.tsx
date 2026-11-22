@@ -238,7 +238,7 @@ async function expireCard($: EngineInterface, key: string): Promise<void> {
   if (card.factId) await $.store.set(K.seen, setOutcome(normalizeSeen(await $.store.get(K.seen)), card.factId, 'ignored'))
 }
 
-/** I knew it, or I need to check it: the card closes. */
+/** I knew it, or I didn't know: the card closes. */
 async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'check'): Promise<void> {
   const card = await read($, cardAtom)
   if (!card || card.key !== key) return
@@ -259,7 +259,7 @@ async function closeCard($: EngineInterface, key: string, outcome: 'knew' | 'che
       isAi: card.isAi,
     }
     await $.store.set(K.toCheck, addToCheck(normalizeToCheck(await $.store.get(K.toCheck)), item))
-    $.ui.toast('Added to To check in the Ipsa Scientia panel.')
+    $.ui.toast("Added to Didn't know in the Ipsa Scientia panel.")
   }
   await sync($)
 }
@@ -274,7 +274,7 @@ async function copy(
   return r.isCopied
 }
 
-/** Copy on the card: the card stays, so I knew it or I need to check it can still be pressed. */
+/** Copy on the card: the card stays, so I knew it or I didn't know can still be pressed. */
 async function onCopyCard($: EngineInterface, key: string, surface: RenderSurface | undefined): Promise<void> {
   const card = await read($, cardAtom)
   if (!card || card.key !== key) return
@@ -526,7 +526,7 @@ export const register: Register = on => {
         <Text>{card.text}</Text>
         <Box flexDirection="row" gap={1} flexWrap="wrap" alignItems="center">
           <Button key="knew" label="I knew it" hotkey="k" onPress={() => closeCard($, card.key, 'knew')} />
-          <Button key="check" label="I need to check it" hotkey="c" onPress={() => closeCard($, card.key, 'check')} />
+          <Button key="didnt-know" label="I didn't know" hotkey="d" onPress={() => closeCard($, card.key, 'check')} />
           <Button key="copy" label="Copy" hotkey="y" onPress={p => onCopyCard($, card.key, p.surface)} />
           {card.isAi ? <Text dimColor>may be wrong</Text> : null}
         </Box>
@@ -614,10 +614,10 @@ export const register: Register = on => {
     const STATS: [keyof typeof todayCounts, string][] = [
       ['shown', 'Shown'],
       ['knew', 'Knew'],
-      ['toCheck', 'To check'],
+      ['toCheck', "Didn't know"],
       ['ignored', 'Ignored'],
       ['copied', 'Copied'],
-      ['checked', 'Checked'],
+      ['checked', 'Looked up'],
     ]
     const column = (key: string, title: string, counts: typeof todayCounts) => (
       <Box key={key} flexDirection="column" flexGrow={1} flexShrink={1}>
@@ -633,7 +633,7 @@ export const register: Register = on => {
 
     const toCheckRows =
       items.length === 0
-        ? [<Text key="none-to-check" dimColor>Nothing to check. Every fact so far you either knew or let pass.</Text>]
+        ? [<Text key="none-to-check" dimColor>Nothing here. Every fact so far you either knew or let pass.</Text>]
         : items.map(item => (
             <Box key={`item-${item.id}`} flexDirection="column" gap={0}>
               <Text>{item.text}</Text>
@@ -642,7 +642,7 @@ export const register: Register = on => {
               </Text>
               <Box flexDirection="row" gap={1} flexWrap="wrap" alignItems="center">
                 {item.source ? <Link key={`source-${item.id}`} href={item.source} label="Source" /> : null}
-                <Button key={`checked-${item.id}`} label="Checked" variant="secondary" onPress={() => onChecked($, item.id)} />
+                <Button key={`looked-up-${item.id}`} label="Looked it up" variant="secondary" onPress={() => onChecked($, item.id)} />
                 <Button key={`copy-${item.id}`} label="Copy" variant="secondary" onPress={p => onCopyItem($, item, p.surface)} />
               </Box>
             </Box>
@@ -708,7 +708,7 @@ export const register: Register = on => {
             {column('all', 'All time', allCounts)}
           </Box>,
           <Text key="knew-line">{knewLine(todayCounts)}</Text>,
-          label('To check'),
+          label("Didn't know"),
           ...toCheckRows,
         ])}
 

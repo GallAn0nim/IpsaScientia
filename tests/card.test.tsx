@@ -30,7 +30,8 @@ for (const surface of SURFACES) {
     expect(await label(ui)).toMatch(/^Did you know\? · (Space|Math)$/)
     expect((await ui.find({ type: 'Button', key: 'knew' }))?.props.label).toBe('I knew it')
     expect((await ui.find({ type: 'Button', key: 'knew' }))?.props.hotkey).toBe('k')
-    expect((await ui.find({ type: 'Button', key: 'check' }))?.props.hotkey).toBe('c')
+    expect((await ui.find({ type: 'Button', key: 'didnt-know' }))?.props.label).toBe("I didn't know")
+    expect((await ui.find({ type: 'Button', key: 'didnt-know' }))?.props.hotkey).toBe('d')
     expect((await ui.find({ type: 'Button', key: 'copy' }))?.props.hotkey).toBe('y')
     expect(store.get('is.day')).toEqual(expect.objectContaining({ counts: expect.objectContaining({ shown: 1 }) }))
     await ui.unmount()
@@ -65,19 +66,19 @@ for (const surface of SURFACES) {
     await ui.unmount()
   })
 
-  test(`${surface}: I need to check it puts the fact and its source on the To check list`, async ($, on) => {
+  test(`${surface}: I didn't know puts the fact and its source on the Didn't know list`, async ($, on) => {
     const { clock, store, toasts } = world(on, T0)
     await $.session.start({ cwd: '/', surface, isInteractive: true })
     const ui = await $.ui.mount(band(surface))
     await $.turn.start(start('t1'))
     await clock.advance(30_000)
-    await ui.press({ key: 'check' })
+    await ui.press({ key: 'didnt-know' })
     expect(await label(ui)).toBe(undefined)
     const list = (store.get('is.toCheck')) as { items: { source?: string; isAi: boolean }[] }
     expect(list.items).toHaveLength(1)
     expect(list.items[0]!.source).toMatch(/^https:\/\/example\.org\//)
     expect(list.items[0]!.isAi).toBe(false)
-    expect(toasts).toContain('Added to To check in the Ipsa Scientia panel.')
+    expect(toasts).toContain("Added to Didn't know in the Ipsa Scientia panel.")
     await ui.unmount()
   })
 

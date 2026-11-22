@@ -57,14 +57,17 @@ for (const surface of SURFACES) {
     expect(await text(ui, /^You knew/)).toBe('You knew 4 of 10 (40%)')
     expect(await text(ui, /^10$/)).toBe('10')
     expect(await text(ui, /^40$/)).toBe('40')
-    expect(await text(ui, /^Nothing to check/)).toBe('Nothing to check. Every fact so far you either knew or let pass.')
+    expect(await text(ui, /^Nothing here/)).toBe('Nothing here. Every fact so far you either knew or let pass.')
+    expect(await text(ui, /^Didn't know$/)).toBe("Didn't know")
+    expect(await text(ui, /^Looked up$/)).toBe('Looked up')
+    expect(await text(ui, /^DIDN'T KNOW$/)).toBe("DIDN'T KNOW")
     expect(await text(ui, /checked against their sources/)).toBe(
       'Built-in facts are checked against their sources. AI facts may be wrong.',
     )
     await ui.unmount()
   })
 
-  test(`${surface}: the To check list, newest first; Checked removes and counts`, async ($, on) => {
+  test(`${surface}: the Didn't know list; Looked it up removes and counts`, async ($, on) => {
     const { store } = world(on, T0, {
       store: {
         'is.day': day(),
@@ -79,7 +82,8 @@ for (const surface of SURFACES) {
     // One Source link: the AI fact has none.
     expect((await ui.find({ type: 'Link' }))?.props.href).toBe('https://example.org/venus-day')
 
-    await ui.press({ key: 'checked-venus-day' })
+    expect(await button(ui, 'looked-up-venus-day')).toBe('Looked it up')
+    await ui.press({ key: 'looked-up-venus-day' })
     expect(await text(ui, /^Fact venus-day\.$/)).toBe(undefined)
     expect(await ui.find({ type: 'Link' })).toBe(undefined)
     expect((store.get('is.day') as { counts: { checked: number } }).counts.checked).toBe(1)

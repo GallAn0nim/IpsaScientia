@@ -85,7 +85,7 @@ describe('when a fact appears', () => {
 
   test('the status line', async () => {
     const d = day({ lastFactAt: T0 })
-    expect(statusText(S, null, d, 3, T0 + 8 * MIN)).toBe('Ipsa Scientia · next fact in 12 min · 3 to check')
+    expect(statusText(S, null, d, 3, T0 + 8 * MIN)).toBe("Ipsa Scientia · next fact in 12 min · 3 didn't know")
     expect(statusText(S, null, null, 0, T0)).toBe('Ipsa Scientia · next fact during the next longer turn')
   })
 
@@ -112,7 +112,7 @@ describe('the shuffle bag', () => {
     expect(pickFact(facts, S, seen, bag, rng)).not.toBe(null)
   })
 
-  test('I knew it never comes back; To check does not while it is there', async () => {
+  test("I knew it never comes back; Didn't know does not while it is on the list", async () => {
     const seen: Seen = { v: 1, byId: { a: 'knew', b: 'check', c: 'checked', d: 'ignored' } }
     const rng = seeded(3)
     for (let i = 0; i < 10; i++) expect(pickFact(facts, S, seen, { v: 1, ids: [] }, rng)!.fact.id).toBe('d')
@@ -162,10 +162,10 @@ describe('counters', () => {
   })
 })
 
-describe('the To check list', () => {
+describe("the Didn't know list", () => {
   const item = (id: string, date = localDate(T0)) => ({ id, text: `fact ${id}`, category: 'space', date, isAi: false })
 
-  test('newest first, no duplicates; Checked removes the item', async () => {
+  test('newest first, no duplicates; Looked it up removes the item', async () => {
     let list = addToCheck({ v: 1, items: [] }, item('a'))
     list = addToCheck(list, item('b'))
     list = addToCheck(list, item('a'))
