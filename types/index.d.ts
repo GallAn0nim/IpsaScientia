@@ -56,10 +56,10 @@ export type Pause = { v: 1; until: number }
 export type Counts = {
   shown: number
   knew: number
-  toCheck: number
+  didntKnow: number
   ignored: number
   copied: number
-  checked: number
+  lookedUp: number
 }
 
 /** is.day */
@@ -83,8 +83,8 @@ export type Day = {
 /** is.totals */
 export type Totals = { v: 1; counts: Counts }
 
-/** What became of a knowledge-base fact. `checked`: it was on To check and was checked. */
-export type Outcome = 'knew' | 'ignored' | 'check' | 'checked'
+/** What became of a knowledge-base fact. `lookedUp`: it was on the Didn't know list and was looked up. */
+export type Outcome = 'knew' | 'ignored' | 'didntKnow' | 'lookedUp'
 
 /** is.seen */
 export type Seen = { v: 1; byId: Record<string, Outcome> }
@@ -92,7 +92,7 @@ export type Seen = { v: 1; byId: Record<string, Outcome> }
 /** is.bag: the picking queue */
 export type Bag = { v: 1; ids: string[] }
 
-export type ToCheckItem = {
+export type DidntKnowItem = {
   /** the fact's id, or `ai-<time>` for an AI fact */
   id: string
   text: string
@@ -103,8 +103,8 @@ export type ToCheckItem = {
   isAi: boolean
 }
 
-/** is.toCheck, newest first */
-export type ToCheck = { v: 1; items: ToCheckItem[] }
+/** is.didntKnow, newest first */
+export type DidntKnow = { v: 1; items: DidntKnowItem[] }
 
 /** The fact on the card: this session's only. */
 export type Card = {
@@ -130,7 +130,7 @@ export type IsSettings = Settings
 export type IsDay = Day
 export type IsTotals = Totals
 export type IsPause = Pause
-export type IsToCheck = ToCheck
+export type IsDidntKnow = DidntKnow
 export type IsCard = Card
 export type IsCategoryInfo = CategoryInfo
 export type IsAiContext = AiContext
@@ -143,7 +143,7 @@ declare module 'claude-code' {
       day: IsDay | null
       totals: IsTotals | null
       pause: IsPause | null
-      toCheck: IsToCheck | null
+      didntKnow: IsDidntKnow | null
       categories: IsCategoryInfo[]
       /** the fact on this session's card */
       card: IsCard | null

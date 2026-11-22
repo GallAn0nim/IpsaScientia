@@ -26,8 +26,8 @@ It is rare on purpose. A fact you see every turn turns into wallpaper; a fact th
 
 - **One fact during a longer turn.** Only when Claude's turn has run for 30 seconds, at most every 20 minutes (counted across all your open sessions), and at most 12 a day. Short back-and-forth questions never see one. An 8-hour day brings about 10 to 12 facts.
 - **Three buttons.** **I knew it** (`k`): the fact never comes back. **I didn't know** (`d`): it goes on your Didn't know list in the panel, with its source link, so you can look it up later. **Copy** (`y`): the fact and its source go to the clipboard, for the colleague who needs to know. Press nothing and the card hides itself 15 seconds after the turn ends.
-- **Eight categories:** computer history, programming languages, the internet and the web, math, space, the human body, nature, and words and language (where *bug*, *cookie* and *spam* come from).
-- **Every built-in fact has a source**, and every one is checked against it by hand before it ships. No source, no fact. Popular myths appear only to be corrected.
+- **892 facts in eighteen categories:** computer history, programming languages, the internet and the web, math, space, the human body, nature, words and language (where *bug*, *cookie* and *spam* come from), modern discoveries, cryptography and security, famous bugs and failures, algorithms and complexity, physics, the human mind and perception, chemistry and materials, games and strategy, inventions and discoveries, and Earth and its extremes.
+- **Every built-in fact has a source**, and every one is reviewed for accuracy before it ships. No source, no fact. Popular myths appear only to be corrected.
 - **AI facts about your project** (off by default). Let Claude write one fact in three about what you are working on: the borrow checker while you edit Rust, the history of regular expressions while you fix one. You choose how much the model sees.
 - **Works in the terminal and the desktop app.** Text only, so it draws the same everywhere.
 
@@ -73,7 +73,7 @@ Type `/ipsa-scientia` to open the side panel (docked in the terminal's fullscree
 | AI share | 1 of 3 | 1 of 2 to 1 of 5 |
 | AI facts per day | 5 | 0 to 20, a hard cap on model calls |
 
-- **Fact base**: every category with a checkbox and how much of it you have seen (`Space · 12 of 40 seen`).
+- **Fact base**: every category with a checkbox and how much of it you have seen (`Space · 12 of 48 seen`).
 
 The status line shows `Ipsa Scientia · next fact in 12 min · 3 didn't know`.
 
@@ -106,7 +106,7 @@ To name your categories, use `{ "categories": [{ "id": "board-games", "name": "B
 
 ## Health of the facts
 
-Every built-in fact in [`data/facts.json`](data/facts.json) has a `source`, a page where it can be checked, and was checked against it by a human before it shipped. AI facts are not checked by anyone: treat them as a lead, not as a reference.
+Every built-in fact in [`data/facts.json`](data/facts.json) has a `source`, a page where it can be checked. Every fact was reviewed for accuracy before it shipped, and checked against its source where a detail was in doubt; a fact that failed was left out. If you find one that is wrong anyway, say so in an issue. AI facts are not checked by anyone: treat them as a lead, not as a reference.
 
 ```jsonc
 {

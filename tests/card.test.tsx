@@ -61,7 +61,7 @@ for (const surface of SURFACES) {
     }
     expect(store.get('is.totals')).toEqual({
       v: 1,
-      counts: { shown: 3, knew: 3, toCheck: 0, ignored: 0, copied: 0, checked: 0 },
+      counts: { shown: 3, knew: 3, didntKnow: 0, ignored: 0, copied: 0, lookedUp: 0 },
     })
     await ui.unmount()
   })
@@ -74,7 +74,7 @@ for (const surface of SURFACES) {
     await clock.advance(30_000)
     await ui.press({ key: 'didnt-know' })
     expect(await label(ui)).toBe(undefined)
-    const list = (store.get('is.toCheck')) as { items: { source?: string; isAi: boolean }[] }
+    const list = (store.get('is.didntKnow')) as { items: { source?: string; isAi: boolean }[] }
     expect(list.items).toHaveLength(1)
     expect(list.items[0]!.source).toMatch(/^https:\/\/example\.org\//)
     expect(list.items[0]!.isAi).toBe(false)
@@ -144,7 +144,7 @@ for (const surface of SURFACES) {
   })
 
   test(`${surface}: a subagent's turn never shows a fact`, async ($, on) => {
-    const { clock, store } = world(on, T0)
+    const { clock } = world(on, T0)
     await $.session.start({ cwd: '/', surface, isInteractive: true })
     const ui = await $.ui.mount(band(surface))
     await $.turn.start({ text: 'look around', turnId: 'a1', agentId: 'agent-1' })
