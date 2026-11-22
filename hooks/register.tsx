@@ -56,6 +56,9 @@ const K = {
   didntKnow: 'is.didntKnow',
 } as const
 
+/** Where 0.1.0 kept the Didn't know list. Moved to K.didntKnow at session start. */
+const OLD_DIDNT_KNOW = 'is.toCheck'
+
 // ---- Session values, read while drawing ----
 const settingsAtom = atom({ plugin: 'ipsa-scientia', key: 'settings' } as const, DEFAULT_SETTINGS)
 const dayAtom = atom({ plugin: 'ipsa-scientia', key: 'day' } as const, null)
@@ -157,6 +160,14 @@ async function mirror($: EngineInterface, snap: Snapshot): Promise<void> {
 }
 
 /** Pull the shared values into this session, turn back on after a pause, hide an expired card. */
+/** Move the 0.1.0 Didn't know list to its new key, once, and delete the old one. */
+async function moveOldDidntKnow($: EngineInterface): Promise<void> {
+  const old = await $.store.get(OLD_DIDNT_KNOW)
+  if (old == null) return
+  if ((await $.store.get(K.didntKnow)) == null) await $.store.set(K.didntKnow, normalizeDidntKnow(old))
+  await $.store.delete(OLD_DIDNT_KNOW)
+}
+
 async function sync($: EngineInterface): Promise<Snapshot> {
   let snap = await readStore($)
   if (isPauseOver(snap.pause, snap.now)) {
@@ -442,7 +453,7 @@ async function devCommand($: EngineInterface, args: string): Promise<string | nu
       return 'The gap since the last fact is over: the next longer turn shows one.'
     }
     case 'reset': {
-      await Promise.all(Object.values(K).map(k => $.store.delete(k)))
+      await Promise.all([...Object.values(K), OLD_DIDNT_KNOW].map(k => $.store.delete(k)))
       await update($, cardAtom, () => null)
       return 'All Ipsa Scientia data removed.'
     }
@@ -457,6 +468,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'ipsa-scientia', description: 'Open the Ipsa Scientia panel' })
     await loadFacts($)
+    await moveOldDidntKnow($)
     await sync($)
     $.clock.every(POLL_MS, () => void sync($))
     return next(e)
@@ -780,7 +792,7 @@ export const register: Register = on => {
             />
           )),
           <Text key="health" dimColor>
-            Built-in facts are checked against their sources. AI facts may be wrong.
+            Built-in facts are reviewed before they ship and link their sources. AI facts may be wrong.
           </Text>,
         ])}
       </Box>

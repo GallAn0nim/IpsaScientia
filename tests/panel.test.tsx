@@ -61,8 +61,8 @@ for (const surface of SURFACES) {
     expect(await text(ui, /^Didn't know$/)).toBe("Didn't know")
     expect(await text(ui, /^Looked up$/)).toBe('Looked up')
     expect(await text(ui, /^DIDN'T KNOW$/)).toBe("DIDN'T KNOW")
-    expect(await text(ui, /checked against their sources/)).toBe(
-      'Built-in facts are checked against their sources. AI facts may be wrong.',
+    expect(await text(ui, /link their sources/)).toBe(
+      'Built-in facts are reviewed before they ship and link their sources. AI facts may be wrong.',
     )
     await ui.unmount()
   })
@@ -88,6 +88,18 @@ for (const surface of SURFACES) {
     expect(await ui.find({ type: 'Link' })).toBe(undefined)
     expect((store.get('is.day') as { counts: { lookedUp: number } }).counts.lookedUp).toBe(1)
     expect((store.get('is.seen') as { byId: Record<string, string> }).byId['venus-day']).toBe('lookedUp')
+    await ui.unmount()
+  })
+
+  test(`${surface}: a Didn't know list saved by 0.1.0 is moved to its new key`, async ($, on) => {
+    const { store } = world(on, T0, {
+      store: { 'is.day': day(), 'is.toCheck': { v: 1, items: [item('venus-day')] } },
+    })
+    await $.session.start({ cwd: '/', surface, isInteractive: true })
+    const ui = await $.ui.mount(pane(surface))
+    expect(await text(ui, /^Fact venus-day\.$/)).toBeDefined()
+    expect((store.get('is.didntKnow') as { items: { id: string }[] }).items.map(x => x.id)).toEqual(['venus-day'])
+    expect(store.has('is.toCheck')).toBe(false)
     await ui.unmount()
   })
 

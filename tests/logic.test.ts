@@ -14,6 +14,7 @@ import {
   mergeUserFacts,
   newDay,
   nextText,
+  normalizeSeen,
   normalizeSettings,
   normalizeTotals,
   pickFact,
@@ -159,6 +160,18 @@ describe('counters', () => {
     expect(knewLine(r.day.counts)).toBe('You knew 6 of 14 (43%)')
     expect(r.totals.counts.knew).toBe(6)
     expect(knewLine(newDay(T0).counts)).toBe('No facts yet.')
+  })
+})
+
+describe('values saved by 0.1.0', () => {
+  test('the old outcome names map to the new ones', async () => {
+    const seen = normalizeSeen({ v: 1, byId: { a: 'check', b: 'checked', c: 'knew', d: 'bogus' } })
+    expect(seen.byId).toEqual({ a: 'didntKnow', b: 'lookedUp', c: 'knew' })
+  })
+
+  test('the old counter names carry over', async () => {
+    const totals = normalizeTotals({ v: 1, counts: { shown: 9, knew: 4, toCheck: 3, ignored: 1, copied: 1, checked: 2 } })
+    expect(totals.counts).toEqual({ shown: 9, knew: 4, didntKnow: 3, ignored: 1, copied: 1, lookedUp: 2 })
   })
 })
 

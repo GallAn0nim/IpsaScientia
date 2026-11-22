@@ -77,13 +77,15 @@ export const EMPTY_COUNTS: Counts = { shown: 0, knew: 0, didntKnow: 0, ignored: 
 export function normalizeCounts(raw: unknown): Counts {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Partial<Record<keyof Counts, unknown>>
   const n = (x: unknown) => (typeof x === 'number' && Number.isFinite(x) && x >= 0 ? Math.floor(x) : 0)
+  // 0.1.0 stored these two counters as toCheck and checked.
+  const legacy = r as { toCheck?: unknown; checked?: unknown }
   return {
     shown: n(r.shown),
     knew: n(r.knew),
-    didntKnow: n(r.didntKnow),
+    didntKnow: n(r.didntKnow ?? legacy.toCheck),
     ignored: n(r.ignored),
     copied: n(r.copied),
-    lookedUp: n(r.lookedUp),
+    lookedUp: n(r.lookedUp ?? legacy.checked),
   }
 }
 
@@ -271,6 +273,9 @@ export function normalizeSeen(raw: unknown): Seen {
   if (r && r.v === 1 && r.byId && typeof r.byId === 'object') {
     for (const [k, v] of Object.entries(r.byId)) {
       if (v === 'knew' || v === 'ignored' || v === 'didntKnow' || v === 'lookedUp') byId[k] = v
+      // 0.1.0 names
+      else if (v === 'check') byId[k] = 'didntKnow'
+      else if (v === 'checked') byId[k] = 'lookedUp'
     }
   }
   return { v: 1, byId }
