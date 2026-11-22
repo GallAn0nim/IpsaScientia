@@ -4,6 +4,7 @@ This project follows [semantic versioning](https://semver.org).
 
 ## Unreleased
 
+- The fact base grows from 40 facts in eight categories to 892 facts in eighteen. New categories: modern discoveries, cryptography and security, famous bugs and failures, algorithms and complexity, physics, the human mind and perception, chemistry and materials, games and strategy, inventions and discoveries, and Earth and its extremes.
 - "I need to check it" is now **I didn't know** (hotkey `d`), and the To check list and counter are now **Didn't know**.
 - "Checked" is now **Looked it up** on the list and **Looked up** in the stats.
 - Stored counts and lists carry over unchanged.
